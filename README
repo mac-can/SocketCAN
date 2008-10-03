@@ -1,0 +1,23 @@
+CAN Tester (using berliOS socketCAN).
+
+Copyright (C) 2007 UV Software, Friedrichshafen.
+
+Usage: can_test <interface> [<option>...]
+Options for receiver test (default):
+ -r, --receive              count received messages until ^C is pressed
+ -b, --baudrate=<baudrate>  bit timing in kbps (default=125)
+Options for transmitter test:
+ -t, --transmit=<time>      send messages for the given time in seconds
+ -c, --cycle=<cycle>        cycle time in milliseconds (default=0)
+ -d, --data=<length>        send data of given length (default=0)
+ -i, --id=<cob-id>          use given identifier (default=100h)
+ -b, --baudrate=<baudrate>  bit timing in kbps (default=125)
+ Options:
+ -h, --help                 display this help and exit
+     --version              show version information and exit
+
+This is free software. You may redistribute copies of it under the terms of
+the GNU General Public License <http://www.gnu.org/licenses/gpl.html>.
+There is NO WARRANTY, to the extent permitted by law.
+
+Written by Uwe Vogt, UV Software <http://www.uv-software.de/>
