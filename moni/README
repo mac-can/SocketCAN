@@ -1,0 +1,21 @@
+CAN Monitor (using berliOS socketCAN).
+
+Copyright (C) 2007 UV Software, Friedrichshafen.
+
+Usage: can_moni <interface> [<options>]
+Options:
+ -b, --baudrate=<baudrate>    bit timing in kbps (default=125)
+ -t, --time=(abs|rel|zero)    absolute or relative time
+ -i, --id=(hex|dec|oct)       display mode of COB-IDs
+ -d, --data=(hex|dec|oct)     display mode of data bytes
+ -a, --ascii=(on|off)         display data bytes as ascii
+ -x, --exclude=[~]<id-list>   exclude COB-IDs: <id>[-<id>]{,<id>[-<id>]}
+ -s, --script=<filename>      execute a script file
+ -h, --help                   display this help and exit
+     --version                output version information and exit
+
+This is free software. You may redistribute copies of it under the terms of
+the GNU General Public License <http://www.gnu.org/licenses/gpl.html>.
+There is NO WARRANTY, to the extent permitted by law.
+
+Written by Uwe Vogt, UV Software <http://www.uv-software.de/>
