@@ -1,20 +1,17 @@
-CAN Tester (using berliOS socketCAN).
+CAN API V2 for SocketCAN Interfaces on Linux
 
 Copyright (C) 2007 UV Software, Friedrichshafen.
+Copyright (C) 2024 UV SOftware, Berlin.
 
-Usage: can_test <interface> [<option>...]
-Options for receiver test (default):
- -r, --receive              count received messages until ^C is pressed
- -b, --baudrate=<baudrate>  bit timing in kbps (default=125)
-Options for transmitter test:
- -t, --transmit=<time>      send messages for the given time in seconds
- -c, --cycle=<cycle>        cycle time in milliseconds (default=0)
- -d, --data=<length>        send data of given length (default=0)
- -i, --id=<cob-id>          use given identifier (default=100h)
- -b, --baudrate=<baudrate>  bit timing in kbps (default=125)
- Options:
- -h, --help                 display this help and exit
-     --version              show version information and exit
+CAN API V2 is a wrapper specification by UV Software to have a uniform CAN Interface API
+for various CAN interfaces from different vendors running under multiple operating systems.
+
+Supported CAN Interfaces:
+- All Linux Kernel CAN (a.k.a. SocketCAN) interfaces
+
+Hazard note:
+  If you connect your CAN device to a real CAN network when using this program,
+  you might damage your application.
 
 This is free software. You may redistribute copies of it under the terms of
 the GNU General Public License <http://www.gnu.org/licenses/gpl.html>.
