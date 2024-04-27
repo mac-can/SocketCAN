@@ -1,4 +1,6 @@
 # .gitignore
+Trial/.objects
+Trial/soc_test
 Library/.objects
 Library/lib*.so.*
 Library/lib*.a
