@@ -1,5 +1,6 @@
 # #############################################################################
-# Copyright (C) 2007 by UV Software, Friedrichshafen, Germany.
+# Copyright (C) 2007 Uwe Vogt, UV Software, Friedrichshafen, Germany.
+# Copyright (C) 2024 Uwe Vogt, UV Software, Berlin, Germany (info@uv-software.de).
 #
 # http://www.uv-software.de/
 #
@@ -17,7 +18,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #
-# Makefile for can_test (CAN Tester using socketCAN)
+# Makefile for 'can_test' (CAN Tester using socketCAN)
 #
 # For berliOS socketCAN over PEAK PCAN-USB Dongle. For information
 # about socketCAN see "http://socketcan.berlios.de/".
@@ -30,30 +31,39 @@ CFLAGS	= -O2 -Wall -Wno-parentheses \
 	  -DPF_CAN=29 \
 	  -DAF_CAN=PF_CAN
 
-PROGRAM	= can_test
+PROGRAM = can_test
 
-OBJECTS = main.o can_io.o
+CANAPI2 = ../../Sources
 
-MAIN_DEPS = can_io.h can_defs.h
+OBJECTS = $(OUTDIR)/main.o $(OUTDIR)/can_io.o
 
-CAN_IO_DEPS = can_io.h can_defs.h
+MAIN_DEPS = $(CANAPI2)/can_io.h $(CANAPI2)/can_defs.h
+
+CAN_IO_DEPS = $(CANAPI2)/can_io.h $(CANAPI2)/can_defs.h
+
+OUTDIR = .objects
 
 
-all: $(PROGRAM)
+.PHONY: outdir
+
+
+all: outdir $(PROGRAM)
+
+outdir:
+	@mkdir -p $(OUTDIR)
 
 clean:
-	rm -f $(PROGRAM) *.o
+	rm -f $(PROGRAM) $(OUTDIR)/*.o
 
 install:
 	cp -f $(PROGRAM) /usr/local/bin
 
-distclean:
-	rm -f $(PROGRAM) *.o *~
 
+$(OUTDIR)/main.o: main.c $(MAIN_DEPS)
+	gcc $(CFLAGS) -I$(CANAPI2) -o $@ -c $<
 
-main.o: main.c $(MAIN_DEPS)
-
-can_io.o: can_io.c $(CAN_IO_DEPS)
+$(OUTDIR)/can_io.o: $(CANAPI2)/can_io.c $(CAN_IO_DEPS)
+	gcc $(CFLAGS) -I$(CANAPI2) -o $@ -c $<
 
 
 $(PROGRAM): $(OBJECTS)

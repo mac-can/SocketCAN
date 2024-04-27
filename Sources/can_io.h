@@ -1,6 +1,7 @@
-/* ***	$Header: /home/uwe/sources/socketCAN/RCS/can_io.h,v 1.1 2007/08/20 19:52:13 uwe Sav uwe $  ***
+/* ***  $Header: /home/uwe/sources/socketCAN/RCS/can_io.h,v 1.1 2007/08/20 19:52:13 uwe Sav uwe $  ***
  *
- * Copyright (C) 2007 UV Software, Friedrichshafen.
+ * Copyright (C) 2007 Uwe Vogt, UV Software, Friedrichshafen.
+ * Copyright (C) 2024 Uwe Vogt, UV Software, Berlin (info@uv-software.de).
  *
  * http://www.uv-software.de/
  *
@@ -30,83 +31,83 @@
 #define __CAN_IO_H
 
 
-/* ***	includes  ***
+/* ***  includes  ***
  */
 
 #include "can_defs.h"
 
 
-/* ***	defines  ***
+/* ***  defines  ***
  */
 
 #ifndef _CAN_DEFS
- #define CANBDR_1000				 0	/* baud rate: 1000 kBit/s			*/
- #define CANBDR_800					 1	/* baud rate:  800 kBit/s			*/
- #define CANBDR_500					 2	/* baud rate:  500 kBit/s			*/
- #define CANBDR_250					 3	/* baud rate:  250 kBit/s			*/
- #define CANBDR_125					 4	/* baud rate:  125 kBit/s			*/
- #define CANBDR_100					 5	/* baud rate:  100 kBit/s			*/
- #define CANBDR_50					 6	/* baud rate:   50 kBit/s			*/
- #define CANBDR_20					 7	/* baud rate:   20 kBit/s			*/
- #define CANBDR_10					 8	/* baud rate:   10 kBit/s			*/
+ #define CANBDR_1000                 0  /* baud rate: 1000 kBit/s           */
+ #define CANBDR_800                  1  /* baud rate:  800 kBit/s           */
+ #define CANBDR_500                  2  /* baud rate:  500 kBit/s           */
+ #define CANBDR_250                  3  /* baud rate:  250 kBit/s           */
+ #define CANBDR_125                  4  /* baud rate:  125 kBit/s           */
+ #define CANBDR_100                  5  /* baud rate:  100 kBit/s           */
+ #define CANBDR_50                   6  /* baud rate:   50 kBit/s           */
+ #define CANBDR_20                   7  /* baud rate:   20 kBit/s           */
+ #define CANBDR_10                   8  /* baud rate:   10 kBit/s           */
 
- #define CANERR_NOERROR				 0	/* no error!						*/
- #define CANERR_BOFF				-1	/* CAN - busoff status				*/
- #define CANERR_EWRN				-2 	/* CAN - error warning status		*/
- #define CANERR_BERR				-3	/* CAN - bus error					*/
- #define CANERR_OFFLINE				-9	/* CAN - not started				*/
- #define CANERR_ONLINE				-8	/* CAN - already started			*/
- #define CANERR_MSG_LST				-10	/* CAN - message lost				*/
- #define CANERR_LEC_STUFF			-11	/* LEC - stuff error				*/
- #define CANERR_LEC_FORM			-12	/* LEC - form error					*/
- #define CANERR_LEC_ACK				-13	/* LEC - acknowledge error			*/
- #define CANERR_LEC_BIT1			-14	/* LEC - recessive bit error		*/
- #define CANERR_LEC_BIT0			-15	/* LEC - dominant bit error			*/
- #define CANERR_LEC_CRC				-16	/* LEC - checksum error				*/
- #define CANERR_TX_BUSY				-20	/* USR - transmitter busy			*/
- #define CANERR_RX_EMPTY			-30	/* USR - receiver empty				*/
- #define CANERR_TIMEOUT				-50	/* USR - time-out					*/
- #define CANERR_BAUDRATE			-91	/* USR - illegal baudrate			*/
- #define CANERR_ILLPARA				-93	/* USR - illegal parameter			*/
- #define CANERR_NULLPTR				-94	/* USR - null-pointer assignement	*/
- #define CANERR_NOTINIT				-95	/* USR - not initialized			*/
- #define CANERR_YETINIT				-96	/* USR - already initialized		*/
- #define CANERR_NOTSUPP				-98	/* USR - not supported				*/
- #define CANERR_FATAL				-99	/* USR - other errors				*/
+ #define CANERR_NOERROR              0  /* no error!                        */
+ #define CANERR_BOFF                -1  /* CAN - busoff status              */
+ #define CANERR_EWRN                -2  /* CAN - error warning status       */
+ #define CANERR_BERR                -3  /* CAN - bus error                  */
+ #define CANERR_OFFLINE             -9  /* CAN - not started                */
+ #define CANERR_ONLINE              -8  /* CAN - already started            */
+ #define CANERR_MSG_LST             -10 /* CAN - message lost               */
+ #define CANERR_LEC_STUFF           -11 /* LEC - stuff error                */
+ #define CANERR_LEC_FORM            -12 /* LEC - form error                 */
+ #define CANERR_LEC_ACK             -13 /* LEC - acknowledge error          */
+ #define CANERR_LEC_BIT1            -14 /* LEC - recessive bit error        */
+ #define CANERR_LEC_BIT0            -15 /* LEC - dominant bit error         */
+ #define CANERR_LEC_CRC             -16 /* LEC - checksum error             */
+ #define CANERR_TX_BUSY             -20 /* USR - transmitter busy           */
+ #define CANERR_RX_EMPTY            -30 /* USR - receiver empty             */
+ #define CANERR_TIMEOUT             -50 /* USR - time-out                   */
+ #define CANERR_BAUDRATE            -91 /* USR - illegal baudrate           */
+ #define CANERR_ILLPARA             -93 /* USR - illegal parameter          */
+ #define CANERR_NULLPTR             -94 /* USR - null-pointer assignement   */
+ #define CANERR_NOTINIT             -95 /* USR - not initialized            */
+ #define CANERR_YETINIT             -96 /* USR - already initialized        */
+ #define CANERR_NOTSUPP             -98 /* USR - not supported              */
+ #define CANERR_FATAL               -99 /* USR - other errors               */
 
- #define CANSTAT_RESET				0x80/* CAN status: controller stopped	*/
- #define CANSTAT_BOFF				0x40/* CAN status: busoff status		*/
- #define CANSTAT_EWRN				0x20/* CAN status: error warning level	*/
- #define CANSTAT_BERR				0x10/* CAN status: bus error (LEC)		*/
- #define CANSTAT_TX_BUSY			0x08/* CAN status: transmitter busy		*/
- #define CANSTAT_RX_EMPTY			0x04/* CAN status: receiver empty		*/
- #define CANSTAT_MSG_LST			0x02/* CAN status: message lost			*/
- #define CANSTAT_QUE_OVR			0x01/* CAN status: event-queue overrun	*/
+ #define CANSTAT_RESET              0x80/* CAN status: controller stopped   */
+ #define CANSTAT_BOFF               0x40/* CAN status: busoff status        */
+ #define CANSTAT_EWRN               0x20/* CAN status: error warning level  */
+ #define CANSTAT_BERR               0x10/* CAN status: bus error (LEC)      */
+ #define CANSTAT_TX_BUSY            0x08/* CAN status: transmitter busy     */
+ #define CANSTAT_RX_EMPTY           0x04/* CAN status: receiver empty       */
+ #define CANSTAT_MSG_LST            0x02/* CAN status: message lost         */
+ #define CANSTAT_QUE_OVR            0x01/* CAN status: event-queue overrun  */
 #endif
 
-/* ***	types  ***
+/* ***  types  ***
  */
 
-typedef struct _can_msg_t {				/* CAN message:						*/
-	unsigned long id;					/*   CAN identifier					*/
-	int rtr;							/*   flag: RTR frame				*/
-	int ext;							/*   flag: extended format			*/
-	unsigned char dlc;					/*   data length code				*/
-	unsigned char data[8];				/*   data bytes						*/
-	struct _timestamp {					/*   time stamp:					*/
-		long sec;						/*     seconds (relative)			*/
-		long usec;						/*     microseconds					*/
-	} timestamp;
-}	can_msg_t;
+typedef struct _can_msg_t {             /* CAN message:                     */
+    unsigned long id;                   /*   CAN identifier                 */
+    int rtr;                            /*   flag: RTR frame                */
+    int ext;                            /*   flag: extended format          */
+    unsigned char dlc;                  /*   data length code               */
+    unsigned char data[8];              /*   data bytes                     */
+    struct _timestamp {                 /*   time stamp:                    */
+        long sec;                       /*     seconds (relative)           */
+        long usec;                      /*     microseconds                 */
+    } timestamp;
+}   can_msg_t;
 
 
-/* ***	variables  ***
+/* ***  variables  ***
  */
 
-extern int can_baudrate;				/* index to the bit-timing table	*/
+extern int can_baudrate;                /* index to the bit-timing table    */
 
 
-/* ***	prototypes  ***
+/* ***  prototypes  ***
  */
 
 int can_init(int board, void *param);
@@ -114,7 +115,7 @@ int can_init(int board, void *param);
  * function : 
  *
  * parameter: board - type of the CAN Controller interface.
- *	          param - pointer to board-specific parameters.
+ *            param - pointer to board-specific parameters.
  *
  * result   : 0 if successful, or a negative value on error.
  */
@@ -178,7 +179,7 @@ int can_busload(unsigned char *load, unsigned char *status);
  * function : 
  *
  * parameter: load   - bus-load in [percent].
- *	          status - 8-bit status register.
+ *            status - 8-bit status register.
  *
  * result   : 0 if successful, or a negative value on error.
  */
@@ -186,7 +187,7 @@ int can_busload(unsigned char *load, unsigned char *status);
 char *can_hardware(void);
 /*
  * function : retrieves the hardware version of the CAN Controller
- *	          as a zero-terminated string.
+ *            as a zero-terminated string.
  *
  * parameter: (none)
  *
@@ -196,7 +197,7 @@ char *can_hardware(void);
 char *can_software(void);
 /*
  * function : retrieves the firmware version of the CAN Controller
- *	          as a zero-terminated string.
+ *            as a zero-terminated string.
  *
  * parameter: (none)
  *
@@ -206,7 +207,7 @@ char *can_software(void);
 char *can_version(void);
 /*
  * function : retrieves version information of the CAN Controller API
- *	          as a zero-terminated string.
+ *            as a zero-terminated string.
  *
  * parameter: (none)
  *
@@ -215,6 +216,6 @@ char *can_version(void);
 
 #endif
 
-/* ***	end of file  ***
+/* ***  end of file  ***
  */
  

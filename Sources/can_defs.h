@@ -1,6 +1,7 @@
-/* ***	$Header: /home/uwe/sources/socketCAN/RCS/can_defs.h,v 1.1 2007/08/20 19:52:42 uwe Sav uwe $  ***
+/* ***  $Header: /home/uwe/sources/socketCAN/RCS/can_defs.h,v 1.1 2007/08/20 19:52:42 uwe Sav uwe $  ***
  *
- * Copyright (C) 2007 UV Software, Friedrichshafen.
+ * Copyright (C) 2007 Uwe Vogt, UV Software, Friedrichshafen.
+ * Copyright (C) 2024 Uwe Vogt, UV Software, Berlin (info@uv-software.de).
  *
  * http://www.uv-software.de/
  *
@@ -30,30 +31,30 @@
 #define __CAN_DEFS_H
 
 
-/* ***	options  ***
+/* ***  options  ***
  */
 
 
-/* ***	defines  ***
+/* ***  defines  ***
  */
 
-#ifndef _CAN_DEFS						/* socketCAN interfaces				*/
+#ifndef _CAN_DEFS                       /* socketCAN interfaces             */
 
- #define CAN_NETDEV				(-1L)	/*   it´s a network device			*/
+ #define CAN_NETDEV             (-1L)   /*   it´s a network device          */
  
- struct _can_param						/*   installation parameters:		*/
+ struct _can_param                      /*   installation parameters:       */
  {
- 	char* ifname;						/*     interface name				*/
- 	int   family;						/*     protocol family				*/
- 	int   type;							/*     communication semantics		*/
- 	int   protocol;						/*     protocol to be used 			*/
+    char* ifname;                       /*     interface name               */
+    int   family;                       /*     protocol family              */
+    int   type;                         /*     communication semantics      */
+    int   protocol;                     /*     protocol to be used          */
  };
- #define CANBDR_SOCKET			(-1)	/*   socketCAN baud rate (external!) */
- #define CANERR_SOCKET			(-10000)/*   socketCAN error ('errno' is set)*/
+ #define CANBDR_SOCKET          (-1)    /*   socketCAN baud rate (external!) */
+ #define CANERR_SOCKET          (-10000)/*   socketCAN error ('errno' is set)*/
 #endif
 
 #endif
 
-/* ***	end of file  ***
+/* ***  end of file  ***
  */
  
