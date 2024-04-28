@@ -3,7 +3,7 @@
 Copyright &copy; 2007 UV Software, Friedrichshafen. \
 Copyright &copy; 2019,2024 UV Software, Berlin.
 
-# CAN API V2 Wrapper Library for SocketCAN Interfaces
+# CAN API V3 Wrapper Library for SocketCAN Interfaces
 
 CAN API is a wrapper specification by UV Software to have a uniform CAN Interface API
 for various CAN interfaces from different vendors running under multiple operating systems.
