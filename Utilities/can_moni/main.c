@@ -1,7 +1,7 @@
-/* ***  $Header$  ***
+/* CAN Monitor (using berliOS socketCAN)
  *
- * Copyright (C) 2007 Uwe Vogt, UV Software, Friedrichshafen.
- * Copyright (C) 2024 Uwe Vogt, UV Software, Berlin (info@uv-software.de).
+ * Copyright (C) 2007,2012 Uwe Vogt, UV Software, Friedrichshafen.
+ * Copyright (C) 2013-2024 Uwe Vogt, UV Software, Berlin (info@uv-software.de).
  *
  * http://www.uv-software.de/
  *
@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * Foundation, 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  * CAN Monitor (using berliOS socketCAN).
  *
@@ -36,13 +36,13 @@
  * Written by Uwe Vogt, UV Software <http://www.uv-software.de/>
  */
 
-static const char* __version__ = "0.1.17";
+static const char* __version__ = "0.4";
 
 
 /* ***  includes  ***
  */
 
-#include "can_io.h"
+#include "can_api.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -150,7 +150,9 @@ int main(int argc, char *argv[])
         {"version", no_argument, 0, 'v'},
         {0, 0, 0, 0}
     };
-    struct _can_param can_param = {"can0", PF_CAN, SOCK_RAW, CAN_RAW};
+    struct _can_netdev_param can_param = {"can0", PF_CAN, SOCK_RAW, CAN_RAW};
+    can_bitrate_t bitrate = {};
+    int handle = (-1);
     
     signal(SIGINT, sigterm);    
     signal(SIGHUP, sigterm);    
@@ -329,11 +331,11 @@ int main(int argc, char *argv[])
     
     fprintf(stdout, "%s (CAN Monitor using socketCAN), version %s of %s\n",
                      basename(argv[0]),__version__,__DATE__);
-    fprintf(stdout, "Copyright (C) 2007 UV Software, Friedrichshafen\n\n");
+    fprintf(stdout, "Copyright (C) 2007,2024 Uwe Vogt, UV Software, Friedrichshafen/Berlin\n\n");
 
     fprintf(stdout, "Hardware=%s...", can_param.ifname);
     fflush (stdout);
-    if((rc = can_init(CAN_NETDEV, &can_param)) != CANERR_NOERROR) {
+    if((rc = can_init(CAN_NETDEV, CANMODE_DEFAULT, &can_param)) != CANERR_NOERROR) {
         fprintf(stdout, "FAILED!\n");
         if(rc != CANERR_SOCKET)
             fprintf(stderr, "+++ error: CAN Controller not initialized (can_init=%i)\n", rc);
@@ -358,13 +360,15 @@ int main(int argc, char *argv[])
  baudrate = CANBDR_SOCKET;
 #endif
     fflush (stdout);
-    if((rc = can_start(baudrate)) != CANERR_NOERROR) {
+    handle = rc;
+    bitrate.index = baudrate;
+    if((rc = can_start(handle, &bitrate)) != CANERR_NOERROR) {
         fprintf(stdout, "FAILED!\n");
         if(rc != CANERR_SOCKET)
             fprintf(stderr, "+++ error: CAN Controller not started (can_start=%i)\n", rc);
         else
             perror("+++ error");
-        can_exit();
+        can_exit(handle);
         return rc;
     }
     fprintf(stdout, "OK!\n");
@@ -372,7 +376,7 @@ int main(int argc, char *argv[])
     fprintf(stderr, "\nPress ^C to abort.\n\n");
 
     while(running) {
-        if((rc = can_receive(&can_msg)) == CANERR_NOERROR) {
+        if((rc = can_receive(handle, &can_msg)) == CANERR_NOERROR) {
             if(((can_msg.id < MAX_ID) && can_id[can_msg.id]) || (can_msg.id >= MAX_ID)) {
                 fprintf(stdout, "%li\t", frames++);
                 print_time(stdout, (struct timeval*)&can_msg.timestamp, mode_time);
@@ -402,15 +406,15 @@ int main(int argc, char *argv[])
             usleep(1);
     }
     fprintf(stdout, "\n");
-    if(((device = can_hardware()) != NULL) &&
-       ((firmware = can_software()) != NULL) &&
+    if(((device = can_hardware(handle)) != NULL) &&
+       ((firmware = can_software(handle)) != NULL) &&
        ((software = can_version()) != NULL))
         fprintf(stdout, "Hardware: %s\n" \
                         "Firmware: %s\n" \
                         "Software: %s\n" \
-                        "Copyright (c) 2007 UV Software, Friedrichshafen\n",
+                        "Copyright (c) 2007,2024 Uwe Vogt, UV Software, Friedrichshafen/Berlin\n",
                 device, firmware, software);
-    can_exit();
+    can_exit(handle);
 
     return 0;
 }
@@ -428,7 +432,8 @@ void version(FILE *stream, char *program)
 {
     fprintf(stream, "%s (CAN Monitor using socketCAN), version %s of %s\n",
                                program,__version__,__DATE__);
-    fprintf(stream, "Copyright (C) 2007 UV Software, Friedrichshafen\n");
+    fprintf(stream, "Copyright (C) 2007,2024 Uwe Vogt, UV Software, Friedrichshafen/Berlin\n\n");
+    
     fprintf(stream, "This is free software. You may redistribute copies of it under the terms of\n");
     fprintf(stream, "the GNU General Public License <http://www.gnu.org/licenses/gpl.html>.\n");
     fprintf(stream, "There is NO WARRANTY, to the extent permitted by law.\n\n");

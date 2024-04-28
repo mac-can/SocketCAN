@@ -1,6 +1,6 @@
 # #############################################################################
-# Copyright (C) 2007 Uwe Vogt, UV Software, Friedrichshafen, Germany.
-# Copyright (C) 2024 Uwe Vogt, UV Software, Berlin, Germany (info@uv-software.de).
+# Copyright (C) 2007,2012 Uwe Vogt, UV Software, Friedrichshafen, Germany.
+# Copyright (C) 2013-2024 Uwe Vogt, UV Software, Berlin, Germany (info@uv-software.de).
 #
 # http://www.uv-software.de/
 #
@@ -16,7 +16,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+# Foundation, 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 # Makefile for 'can_moni' (CAN Monitor using socketCAN)
 #
@@ -29,17 +29,18 @@
 CFLAGS	= -O2 -Wall -Wno-parentheses \
 	  -fno-strict-aliasing \
 	  -DPF_CAN=29 \
-	  -DAF_CAN=PF_CAN
+	  -DAF_CAN=PF_CAN \
+	  -DCAN_20_ONLY=1
 
 PROGRAM = can_moni
 
-CANAPI2 = ../../Sources
+CANAPI3 = ../../Sources
 
-OBJECTS = $(OUTDIR)/main.o $(OUTDIR)/can_io.o
+OBJECTS = $(OUTDIR)/main.o $(OUTDIR)/can_api.o
 
-MAIN_DEPS = $(CANAPI2)/can_io.h $(CANAPI2)/can_defs.h
+MAIN_DEPS = $(CANAPI3)/can_api.h $(CANAPI3)/can_defs.h
 
-CAN_IO_DEPS = $(CANAPI2)/can_io.h $(CANAPI2)/can_defs.h
+CAN_API_DEPS = $(CANAPI3)/can_api.h $(CANAPI3)/can_defs.h
 
 OUTDIR = .objects
 
@@ -60,10 +61,10 @@ install:
 
 
 $(OUTDIR)/main.o: main.c $(MAIN_DEPS)
-	gcc $(CFLAGS) -I$(CANAPI2) -o $@ -c $<
+	gcc $(CFLAGS) -I$(CANAPI3) -o $@ -c $<
 
-$(OUTDIR)/can_io.o: $(CANAPI2)/can_io.c $(CAN_IO_DEPS)
-	gcc $(CFLAGS) -I$(CANAPI2) -o $@ -c $<
+$(OUTDIR)/can_api.o: $(CANAPI3)/can_api.c $(CAN_API_DEPS)
+	gcc $(CFLAGS) -I$(CANAPI3) -o $@ -c $<
 
 
 $(PROGRAM): $(OBJECTS)

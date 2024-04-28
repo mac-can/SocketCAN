@@ -1,7 +1,7 @@
-/* ***  $Header$  ***
+/* CAN Tester (using berliOS socketCAN)
  *
- * Copyright (C) 2007 Uwe Vogt, UV Software, Friedrichshafen.
- * Copyright (C) 2024 Uwe Vogt, UV Software, Berlin (info@uv-software.de).
+ * Copyright (C) 2007,2012 Uwe Vogt, UV Software, Friedrichshafen.
+ * Copyright (C) 2013-2024 Uwe Vogt, UV Software, Berlin (info@uv-software.de).
  *
  * http://www.uv-software.de/
  *
@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * Foundation, 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  * CAN Tester for berliOS socketCAN.
  *
@@ -38,13 +38,13 @@
  * Written by Uwe Vogt, UV Software <http://www.uv-software.de/>
  */
 
-static const char* __version__ = "0.1.17";
+static const char* __version__ = "0.4";
 
 
 /* ***  includes  ***
  */
 
-#include "can_io.h"
+#include "can_api.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -65,10 +65,15 @@ static const char* __version__ = "0.1.17";
 #include <linux/can.h>
 
 
-/* ***  defines  ***
+/* ***  options  ***
  */
 
 #define __no_can_ioctl
+
+
+/* ***  defines  ***
+ */
+
 #ifndef BYTE
 #define BYTE    unsigned char
 #endif
@@ -90,8 +95,8 @@ void sigterm(int signo);
 void usage(FILE *stream, char *program);
 void version(FILE *stream, char *program);
 
-int tx_test(long cob_id, short length, WORD delay, time_t duration);
-int rx_test(void);
+int tx_test(int handle, long cob_id, short length, WORD delay, time_t duration);
+int rx_test(int handle);
 
 short can_start_timer(WORD timeout);
 short can_is_timeout(void);
@@ -127,7 +132,7 @@ int main(int argc, char *argv[])
     long  cob_id = 0x100; int c = 0;
     char *device, *firmware, *software;
     
-    struct  option long_options[] = {
+    struct option long_options[] = {
         {"receive", no_argument, 0, 'r'},
         {"transmit", required_argument, 0, 't'},
         {"baudrate", required_argument, 0, 'b'},
@@ -138,8 +143,10 @@ int main(int argc, char *argv[])
         {"version", no_argument, 0, 'v'},
         {0, 0, 0, 0}
     };
-    struct _can_param can_param = {"can0", PF_CAN, SOCK_RAW, CAN_RAW};
-
+    struct _can_netdev_param can_param = {"can0", PF_CAN, SOCK_RAW, CAN_RAW};
+    can_bitrate_t bitrate = {};
+    int handle = (-1);
+    
     signal(SIGINT, sigterm);    
     signal(SIGHUP, sigterm);    
     signal(SIGTERM, sigterm);   
@@ -264,11 +271,11 @@ int main(int argc, char *argv[])
     
     fprintf(stdout, "%s (Tester for berliOS socketCAN), version %s of %s\n",
                      basename(argv[0]),__version__,__DATE__);
-    fprintf(stdout, "Copyright (C) 2007 UV Software, Friedrichshafen\n\n");
+    fprintf(stdout, "Copyright (C) 2007,2024 Uwe Vogt, UV Software, Friedrichshafen/Berlin\n\n");
 
     fprintf(stdout, "Hardware=%s...", can_param.ifname);
     fflush (stdout);
-    if((rc = can_init(CAN_NETDEV, &can_param)) != CANERR_NOERROR) {
+    if((rc = can_init(CAN_NETDEV, CANMODE_DEFAULT, &can_param)) != CANERR_NOERROR) {
         fprintf(stdout, "FAILED!\n");
         if(rc != CANERR_SOCKET)
             fprintf(stderr, "+++ error: CAN Controller not initialized (can_init=%i)\n", rc);
@@ -293,31 +300,33 @@ int main(int argc, char *argv[])
  baudrate = CANBDR_SOCKET;
 #endif
     fflush (stdout);
-    if((rc = can_start(baudrate)) != CANERR_NOERROR) {
+    handle = rc;
+    bitrate.index = baudrate;
+    if((rc = can_start(handle, &bitrate)) != CANERR_NOERROR) {
         fprintf(stdout, "FAILED!\n");
         if(rc != CANERR_SOCKET)
             fprintf(stderr, "+++ error: CAN Controller not started (can_start=%i)\n", rc);
         else
             perror("+++ error");
-        can_exit();
+        can_exit(handle);
         return rc;
     }
     fprintf(stdout, "OK!\n");
 
     if(mode == TxMODE)                  /* Transmitter-Test                 */
-        tx_test(cob_id, (short)data, (WORD)delay, (time_t)txtime);
+        tx_test(handle, cob_id, (short)data, (WORD)delay, (time_t)txtime);
     else                                /* Receiver-Test                    */
-        rx_test();
+        rx_test(handle);
 
-    if(((device = can_hardware()) != NULL) &&
-       ((firmware = can_software()) != NULL) &&
+    if(((device = can_hardware(handle)) != NULL) &&
+       ((firmware = can_software(handle)) != NULL) &&
        ((software = can_version()) != NULL))
         fprintf(stdout, "Hardware: %s\n" \
                         "Firmware: %s\n" \
                         "Software: %s\n" \
-                        "Copyright (c) 2007 UV Software, Friedrichshafen\n",
+                        "Copyright (c) 2007,2024 Uwe Vogt, UV Software, Friedrichshafen/Berlin\n",
                 device, firmware, software);
-    can_exit();
+    can_exit(handle);
 
     return 0;
 }
@@ -325,7 +334,7 @@ int main(int argc, char *argv[])
 /* ***  functions  ***
  */
 
-int tx_test(long cob_id, short length, WORD delay, time_t duration)
+int tx_test(int handle, long cob_id, short length, WORD delay, time_t duration)
 {
     time_t start = time(NULL);
     can_msg_t message;
@@ -348,7 +357,7 @@ int tx_test(long cob_id, short length, WORD delay, time_t duration)
         message.data[3] = (BYTE)(frames >> 24);
         message.data[4] = message.data[5] = message.data[6] = message.data[7] = 0;
         can_start_timer(delay);
-        if((rc = can_transmit(&message)) == CANERR_NOERROR)
+        if((rc = can_transmit(handle, &message)) == CANERR_NOERROR)
             fprintf(stderr, "%s", prompt[(frames++ % 4)]);
         else
             errors++;
@@ -383,7 +392,7 @@ int tx_test(long cob_id, short length, WORD delay, time_t duration)
     return frames;
 }
 
-int rx_test(void)
+int rx_test(int handle)
 {
     time_t start = time(NULL);
     can_msg_t message;
@@ -396,7 +405,7 @@ int rx_test(void)
     fprintf(stdout, "\nReceive message(s)...");
     fflush (stdout);
     for(;;) {
-        if((rc = can_receive(&message)) == CANERR_NOERROR)
+        if((rc = can_receive(handle, &message)) == CANERR_NOERROR)
             fprintf(stderr, "%s", prompt[(frames++ % 4)]);
         else if(rc != CANERR_RX_EMPTY)
             errors++;
@@ -452,7 +461,8 @@ void version(FILE *stream, char *program)
 {
     fprintf(stream, "%s (Tester for berliOS socketCAN), version %s of %s\n",
                                program,__version__,__DATE__);
-    fprintf(stream, "Copyright (C) 2007 UV Software, Friedrichshafen\n");
+    fprintf(stream, "Copyright (C) 2007,2024 Uwe Vogt, UV Software, Friedrichshafen/Berlin\n\n");
+    
     fprintf(stream, "This is free software. You may redistribute copies of it under the terms of\n");
     fprintf(stream, "the GNU General Public License <http://www.gnu.org/licenses/gpl.html>.\n");
     fprintf(stream, "There is NO WARRANTY, to the extent permitted by law.\n\n");
