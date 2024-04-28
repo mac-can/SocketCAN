@@ -1,5 +1,5 @@
 # #############################################################################
-# Copyright (C) 2019,2024 Uwe Vogt, UV Software, Berlin (info@uv-software.de)
+# Copyright (C) 2015-2024 Uwe Vogt, UV Software, Berlin (info@uv-software.de)
 #
 # http://www.uv-software.de/
 #
@@ -15,7 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+# Foundation, 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 # Makefile for 'libuvcansoc.so' (CAN API V2 for SocketCAN interfaces)
 #
@@ -31,15 +31,15 @@ VERSION = 0.1
 
 LIBRARY = libuvcansoc
 
-SONAME  = $(LIBRARY).so.2
+SONAME  = $(LIBRARY).so.3
 TARGET  = $(SONAME).$(VERSION)
 STATIC  = $(LIBRARY).a
 
 INSTALL = /usr/local/lib
 
-OBJECTS = $(OUTDIR)/can_io.o
+OBJECTS = $(OUTDIR)/can_api.o
 
-CAN_API_DEPS = $(DRV)/can_io.h $(DRV)/can_defs.h
+CAN_API_DEPS = $(DRV)/can_api.h $(DRV)/can_defs.h
 
 CFLAGS	= -fPIC -Wall -Wno-parentheses \
 	-fno-strict-aliasing \
@@ -80,7 +80,7 @@ install:
 	$(RM) $(INSTALL)/$(LIBRARY).so ; $(LN) $(INSTALL)/$(SONAME) $(INSTALL)/$(LIBRARY).so
 
 
-$(OUTDIR)/can_io.o: $(DRV)/can_io.c $(CAN_API_DEPS)
+$(OUTDIR)/can_api.o: $(DRV)/can_api.c $(CAN_API_DEPS)
 	$(CC) $(CFLAGS) -o $@ -c $<
 
 

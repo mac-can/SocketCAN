@@ -1,4 +1,5 @@
 # .gitignore
+Sources/can_vers.h
 Trial/.objects
 Trial/soc_test
 Library/.objects
