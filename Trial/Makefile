@@ -1,21 +1,22 @@
 #
 #	Trial Program
-#	PCBUSB-Wrapper
+#	SocketCAN-Wrapper
 #	Bart Simpson didn´t do it
 #
 DRV	= ../Sources
 
 PROGRAM	= soc_test
 
-OBJECTS = $(OUTDIR)/main.o $(OUTDIR)/can_io.o
+OBJECTS = $(OUTDIR)/main.o $(OUTDIR)/can_api.o $(OUTDIR)/printmsg.o
 
-MAIN_DEPS = $(DRV)/can_io.h $(DRV)/can_defs.h
+MAIN_DEPS = $(DRV)/can_api.h $(DRV)/can_defs.h $(DRV)/can_vers.h ./printmsg.h
 
-CAN_IO_DEPS = $(DRV)/can_io.h $(DRV)/can_defs.h
+CAN_API_DEPS = $(DRV)/can_api.h $(DRV)/can_defs.h $(DRV)/can_vers.h
+
+PRINTMSG_DEPS = ./printmsg.h
 
 CFLAGS	= -O2 -Wall -Wno-parentheses \
 	-fno-strict-aliasing \
-	-D_CANAPI_EXTERN \
 	-I$(DRV)
 
 LIBRARIES = -lpthread
@@ -48,7 +49,10 @@ install:
 $(OUTDIR)/main.o: main.c $(MAIN_DEPS)
 	$(CC) $(CFLAGS) -o $@ -c $<
 
-$(OUTDIR)/can_io.o: $(DRV)/can_io.c $(CAN_IO_DEPS)
+$(OUTDIR)/printmsg.o: printmsg.c $(PRINTMSG_DEPS)
+	$(CC) $(CFLAGS) -o $@ -c $<
+
+$(OUTDIR)/can_api.o: $(DRV)/can_api.c $(CAN_API_DEPS)
 	$(CC) $(CFLAGS) -o $@ -c $<
 
 
